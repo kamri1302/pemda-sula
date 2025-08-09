@@ -1,103 +1,108 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
-export default function Home() {
+export default function HomePage() {
+  const [berita, setBerita] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/berita")
+      .then((res) => res.json())
+      .then((data) => {
+        setBerita(data);
+        setLoading(false);
+      });
+  }, []);
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main>
+      {/* Hero Section */}
+      <section className="relative bg-green-700 text-white overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="container mx-auto px-4 py-20 text-center"
+        >
+          <h1 className="text-3xl sm:text-5xl font-bold mb-4">
+            Selamat Datang di Portal Resmi Pemda Sula
+          </h1>
+          <p className="max-w-xl mx-auto text-lg text-green-100">
+            Informasi terbaru, program, dan kegiatan untuk masyarakat Kepulauan Sula.
+          </p>
+        </motion.div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        {/* Wave SVG di bawah */}
+        <div className="absolute bottom-0 w-full overflow-hidden leading-none pointer-events-none">
+          <svg
+            className="relative block w-[200%] h-20 sm:h-28 wave-animation"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1200 120"
+            preserveAspectRatio="none"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+            <path
+              d="M0,39.37 C65.86,27.46 131.07,20.38 201.27,31.37
+                 C285,44.5 370.07,74.17 491.78,67.89
+                 C572.92,63.14 651.42,18.27 743.84,23.15
+                 C823.78,28 906.67,72 985.66,92.83
+                 C1057.93,113.2 1133.45,118.13 1200,97.8
+                 L1200,120 L0,120 Z"
+              fill="#ffffff"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </svg>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+
+      {/* Berita Terbaru */}
+      <section className="container mx-auto px-4 py-10">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center">
+          Berita Terbaru
+        </h2>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {loading
+            ? Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse"
+                >
+                  <div className="w-full h-48 bg-gray-300"></div>
+                  <div className="p-4">
+                    <div className="h-4 bg-gray-300 mb-2"></div>
+                    <div className="h-3 bg-gray-200 mb-2"></div>
+                    <div className="h-3 bg-gray-200 w-2/3"></div>
+                  </div>
+                </div>
+              ))
+            : berita.map((item) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition"
+                >
+                  <Link href={`/berita/${item.id}`}>
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      width={600}
+                      height={400}
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+                      <p className="text-sm text-gray-500 mb-2">{item.date}</p>
+                      <p className="text-gray-700 text-sm">{item.excerpt}</p>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+        </div>
+      </section>
+    </main>
   );
 }
