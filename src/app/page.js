@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -13,7 +13,12 @@ export default function HomePage() {
     fetch("/api/berita")
       .then((res) => res.json())
       .then((data) => {
-        setBerita(data);
+        // Urutkan terbaru → lama
+        const sorted = [...data].sort(
+          (a, b) => new Date(b.post_date) - new Date(a.post_date)
+        );
+        // Ambil hanya 3 berita terbaru
+        setBerita(sorted.slice(0, 3));
         setLoading(false);
       });
   }, []);
@@ -35,6 +40,8 @@ export default function HomePage() {
             Informasi terbaru, program, dan kegiatan untuk masyarakat Kepulauan Sula.
           </p>
         </motion.div>
+
+        {/* Wave SVG */}
         <div className="absolute bottom-0 w-full overflow-hidden leading-none pointer-events-none">
           <svg
             className="relative block w-[200%] h-20 sm:h-28 wave-animation"
@@ -92,19 +99,15 @@ export default function HomePage() {
                       className="w-full h-48 object-cover"
                     />
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold mb-2">
-                        {item.post_title}
-                      </h3>
+                      <h3 className="text-lg font-semibold mb-2">{item.post_title}</h3>
                       <p className="text-sm text-gray-500 mb-2">
-                        {new Date(item.post_date).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
+                        {new Date(item.post_date).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
                         })}
                       </p>
-                      <p className="text-gray-700 text-sm">
-                        {item.post_excerpt}
-                      </p>
+                      <p className="text-gray-700 text-sm">{item.post_excerpt}</p>
                     </div>
                   </Link>
                 </motion.div>
