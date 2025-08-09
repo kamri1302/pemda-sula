@@ -29,17 +29,23 @@ export default function BeritaDetail() {
     <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
       <main className="md:col-span-2">
         <article>
-          <h1 className="text-3xl font-bold mb-4">{berita.title}</h1>
-          <p className="text-sm text-gray-500 mb-6">{berita.date}</p>
+          <h1 className="text-3xl font-bold mb-4">{berita.post_title}</h1>
+          <p className="text-sm text-gray-500 mb-6">
+            {new Date(berita.post_date).toLocaleDateString('id-ID', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+          </p>
           <img
             src={berita.image}
-            alt={berita.title}
+            alt={berita.post_title}
             className="w-full max-h-96 object-cover mb-6 rounded"
             loading="lazy"
           />
           <div
             className="prose max-w-none"
-            dangerouslySetInnerHTML={{ __html: berita.content }}
+            dangerouslySetInnerHTML={{ __html: berita.post_content }}
           />
         </article>
       </main>

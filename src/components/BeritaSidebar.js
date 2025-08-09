@@ -19,10 +19,13 @@ export default function BeritaSidebar() {
         <h3 className="text-xl font-bold mb-3">Widget Berita Terbaru</h3>
         <ul className="space-y-2">
           {beritas.length === 0 && <li>Loading...</li>}
-          {beritas.map(({ id, title }) => (
-            <li key={id}>
-              <Link href={`/berita/${id}`} className="text-green-700 hover:text-green-900 underline">
-                {title}
+          {beritas.map((item) => (
+            <li key={`sidebar-${item.ID}`}>
+              <Link
+                href={`/berita/${item.ID}`}
+                className="text-green-700 hover:text-green-900 underline"
+              >
+                {item.post_title}
               </Link>
             </li>
           ))}

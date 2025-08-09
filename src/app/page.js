@@ -35,8 +35,6 @@ export default function HomePage() {
             Informasi terbaru, program, dan kegiatan untuk masyarakat Kepulauan Sula.
           </p>
         </motion.div>
-
-        {/* Wave SVG di bawah */}
         <div className="absolute bottom-0 w-full overflow-hidden leading-none pointer-events-none">
           <svg
             className="relative block w-[200%] h-20 sm:h-28 wave-animation"
@@ -66,7 +64,7 @@ export default function HomePage() {
           {loading
             ? Array.from({ length: 3 }).map((_, i) => (
                 <div
-                  key={i}
+                  key={`skeleton-${i}`}
                   className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse"
                 >
                   <div className="w-full h-48 bg-gray-300"></div>
@@ -79,24 +77,34 @@ export default function HomePage() {
               ))
             : berita.map((item) => (
                 <motion.div
-                  key={item.id}
+                  key={`berita-${item.ID}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
                   className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition"
                 >
-                  <Link href={`/berita/${item.id}`}>
+                  <Link href={`/berita/${item.ID}`}>
                     <Image
                       src={item.image}
-                      alt={item.title}
+                      alt={item.post_title}
                       width={600}
                       height={400}
                       className="w-full h-48 object-cover"
                     />
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                      <p className="text-sm text-gray-500 mb-2">{item.date}</p>
-                      <p className="text-gray-700 text-sm">{item.excerpt}</p>
+                      <h3 className="text-lg font-semibold mb-2">
+                        {item.post_title}
+                      </h3>
+                      <p className="text-sm text-gray-500 mb-2">
+                        {new Date(item.post_date).toLocaleDateString("id-ID", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </p>
+                      <p className="text-gray-700 text-sm">
+                        {item.post_excerpt}
+                      </p>
                     </div>
                   </Link>
                 </motion.div>
