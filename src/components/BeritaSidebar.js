@@ -1,41 +1,56 @@
+// src/components/BeritaSidebar.jsx
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function BeritaSidebar() {
-  const [beritas, setBeritas] = useState([]);
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
-    fetch('/api/berita')
-      .then((res) => res.ok ? res.json() : [])
-      .then((data) => setBeritas(data.slice(0, 5)))
-      .catch(() => setBeritas([]));
+    fetch('/api/sidebar-berita')
+      .then((res) => res.json())
+      .then((data) => setItems(data))
+      .catch(() => setItems([]));
   }, []);
+
+  if (!items.length) {
+    return <p className="p-4 text-gray-500">Memuat data...</p>;
+  }
 
   return (
     <aside className="space-y-6">
-      <section className="bg-green-100 rounded-lg p-4 shadow-sm">
-        <h3 className="text-xl font-bold mb-3">Widget Berita Terbaru</h3>
-        <ul className="space-y-2">
-          {beritas.length === 0 && <li>Loading...</li>}
-          {beritas.map((item) => (
-            <li key={`sidebar-${item.ID}`}>
-              <Link
-                href={`/berita/${item.ID}`}
-                className="text-green-700 hover:text-green-900 underline"
-              >
-                {item.post_title}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {items.map((item) => (
+        <section
+          key={item.ID}
+          className="bg-white p-4 border border-gray-200"
+        >
 
-      <section className="bg-green-100 rounded-lg p-4 shadow-sm">
-        <h3 className="text-xl font-bold mb-3">Widget Lainnya</h3>
-        <p className="text-gray-700">Tambahkan widget lain di sini sesuai kebutuhan.</p>
-      </section>
+          {item.type === 'image' ? (
+            <div className="-m-4">
+              <img
+                src={item.src}
+                alt={item.post_title}
+                className="w-full h-auto object-cover"
+                loading="lazy"
+              />
+            </div>
+          ) : (
+            <div className="-m-4">
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-auto"
+                preload="metadata"
+              >
+                <source src={item.src} type={item.mime || 'video/mp4'} />
+                Browser Anda tidak mendukung video.
+              </video>
+            </div>
+          )}
+        </section>
+      ))}
     </aside>
   );
 }

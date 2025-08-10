@@ -9,8 +9,24 @@ export default function BeritaSlider({ items }) {
   const length = items.length;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHover, setIsHover] = useState(false);
+  const [mainWidth, setMainWidth] = useState(null);
   const sliderRef = useRef(null);
+  const mainRef = useRef(null);
 
+  // Ambil ukuran pembungkus beritalist (main col-span-2)
+  useEffect(() => {
+    const mainEl = document.querySelector('main.md\\:col-span-2');
+    if (mainEl) {
+      mainRef.current = mainEl;
+      const updateWidth = () => setMainWidth(mainEl.offsetWidth);
+      updateWidth();
+
+      window.addEventListener('resize', updateWidth);
+      return () => window.removeEventListener('resize', updateWidth);
+    }
+  }, []);
+
+  // Auto slide
   useEffect(() => {
     if (isHover) return;
     const interval = setInterval(() => {
@@ -49,13 +65,15 @@ export default function BeritaSlider({ items }) {
       ref={sliderRef}
       aria-label="Slider berita"
     >
-      {/* Layout berubah sesuai layar */}
-      <div className="flex flex-col md:flex-row md:h-[420px]">
+      {/* Layout */}
+      <div className="flex flex-col md:flex-row md:h-[420px] gap-1">
+        
         {/* Gambar utama */}
         <Link
           href={`/berita/${mainItem.ID}`}
-          className="relative overflow-hidden cursor-pointer select-none w-full md:w-2/3"
+          className="relative overflow-hidden cursor-pointer select-none"
           aria-label={`Berita utama: ${mainItem.post_title}`}
+          style={mainWidth ? { width: mainWidth } : {}}
         >
           <img
             src={mainItem.image}
@@ -75,8 +93,8 @@ export default function BeritaSlider({ items }) {
           </div>
         </Link>
 
-        {/* 2 gambar samping (stack di mobile) */}
-        <div className="flex flex-row md:flex-col w-full md:w-1/3 h-40 md:h-full">
+        {/* 2 gambar samping */}
+        <div className="flex flex-row md:flex-col flex-1 gap-1">
           {sideItems.map((item) => (
             <Link
               key={`slider-side-${item.ID}`}
