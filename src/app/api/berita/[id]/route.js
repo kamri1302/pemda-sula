@@ -1,7 +1,7 @@
 import { beritaTable, beritaMeta, mediaTable } from "../route";
 
-export async function GET(req, { params }) {
-  const { id } = params;
+export async function GET(req, context) {
+  const { id } = await context.params;
 
   const berita = beritaTable.find((b) => b.ID === parseInt(id));
   if (!berita) {
