@@ -1,59 +1,41 @@
+"use client";
+
 import { motion } from "framer-motion";
-import Link from "next/link";
 
-export default function HeroSection({ scrollY }) {
+export default function HeroSection() {
   return (
-    <section className="relative h-[60vh] sm:h-[70vh] flex items-center justify-center text-center overflow-hidden">
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: "url('/images/sula-bg.webp')",
-          backgroundSize: "cover",
-          backgroundPosition: `center ${scrollY * 0.4}px`,
-          transition: "background-position 0.1s ease-out",
-        }}
-      ></div>
-      <div className="absolute inset-0 bg-black/40"></div>
-
+    <section className="relative bg-green-700 text-white overflow-hidden">
       <motion.div
-        className="relative z-10 max-w-3xl px-4 text-white"
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 1 }}
+        className="container mx-auto px-4 py-20 text-center"
       >
-        <h2 className="text-2xl sm:text-4xl font-bold mb-4">
-          Selamat Datang di Portal Resmi <br /> Pemerintah Daerah Kepulauan Sula
-        </h2>
-        <p className="text-sm sm:text-lg">
-          Sumber informasi resmi, berita terbaru, dan program pembangunan untuk masyarakat.
+        <h1 className="text-3xl sm:text-5xl font-bold mb-4">
+          Selamat Datang di Portal Resmi <br/> Pemda Kepulauan Sula
+        </h1>
+        <p className="max-w-xl mx-auto text-lg text-green-100">
+          Informasi terbaru, program, dan kegiatan untuk masyarakat Kepulauan Sula.
         </p>
-        <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4">
-          <a
-            href="#berita"
-            className="bg-green-700 text-white px-5 py-2 rounded-lg shadow hover:bg-green-800 transition"
-          >
-            📢 Baca Berita Terbaru
-          </a>
-          <Link
-            href="/tentang"
-            className="bg-white text-green-700 border border-green-700 px-5 py-2 rounded-lg shadow hover:bg-green-50 transition"
-          >
-            🌏 Kenali Sula Lebih Dekat
-          </Link>
-        </div>
       </motion.div>
 
-      {/* Gelombang */}
-      <div className="absolute bottom-0 left-0 right-0 overflow-hidden leading-[0]">
+      {/* Wave SVG */}
+      <div className="absolute bottom-0 w-full overflow-hidden leading-none pointer-events-none">
         <svg
-          viewBox="0 0 500 150"
+          className="relative block w-[200%] h-20 sm:h-28 wave-animation"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1200 120"
           preserveAspectRatio="none"
-          className="w-full h-[50px] sm:h-[80px]"
         >
           <path
-            d="M0.00,49.98 C149.99,150.00 349.63,-50.00 500.00,49.98 L500.00,150.00 L0.00,150.00 Z"
-            style={{ stroke: "none", fill: "#f9fafb" }}
-          ></path>
+            d="M0,39.37 C65.86,27.46 131.07,20.38 201.27,31.37
+               C285,44.5 370.07,74.17 491.78,67.89
+               C572.92,63.14 651.42,18.27 743.84,23.15
+               C823.78,28 906.67,72 985.66,92.83
+               C1057.93,113.2 1133.45,118.13 1200,97.8
+               L1200,120 L0,120 Z"
+            fill="#ffffff"
+          />
         </svg>
       </div>
     </section>
