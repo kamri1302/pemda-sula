@@ -2,9 +2,21 @@
 
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
+import { usePrefetchCache } from '@/context/PrefetchCacheContext';
 
 export default function BeritaSlider({ items }) {
   if (!items || items.length === 0) return null;
+
+  const { getCache, setCache } = usePrefetchCache();
+  const prefetchBerita = (id) => {
+    if (getCache(id)) return;
+    fetch(`/api/berita/${id}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) setCache(id, data);
+      })
+      .catch(() => {});
+  };
 
   const length = items.length;
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -13,20 +25,17 @@ export default function BeritaSlider({ items }) {
   const sliderRef = useRef(null);
   const mainRef = useRef(null);
 
-  // Ambil ukuran pembungkus beritalist (main col-span-2)
   useEffect(() => {
     const mainEl = document.querySelector('main.md\\:col-span-2');
     if (mainEl) {
       mainRef.current = mainEl;
       const updateWidth = () => setMainWidth(mainEl.offsetWidth);
       updateWidth();
-
       window.addEventListener('resize', updateWidth);
       return () => window.removeEventListener('resize', updateWidth);
     }
   }, []);
 
-  // Auto slide
   useEffect(() => {
     if (isHover) return;
     const interval = setInterval(() => {
@@ -63,52 +72,33 @@ export default function BeritaSlider({ items }) {
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       ref={sliderRef}
-      aria-label="Slider berita"
     >
-      {/* Layout */}
       <div className="flex flex-col md:flex-row md:h-[420px] gap-1">
-        
-        {/* Gambar utama */}
         <Link
           href={`/berita/${mainItem.ID}`}
+          onMouseEnter={() => prefetchBerita(mainItem.ID)}
           className="relative overflow-hidden cursor-pointer select-none"
           aria-label={`Berita utama: ${mainItem.post_title}`}
           style={mainWidth ? { width: mainWidth } : {}}
         >
-          <img
-            src={mainItem.image}
-            alt={mainItem.post_title}
-            className="w-full h-64 md:h-full object-cover"
-            loading="lazy"
-            draggable={false}
-          />
+          <img src={mainItem.image} alt={mainItem.post_title} className="w-full h-64 md:h-full object-cover" loading="lazy" draggable={false} />
           <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 to-transparent" />
           <div className="absolute bottom-4 left-4 right-4 text-white drop-shadow-md">
-            <time className="block text-sm opacity-80 mb-1">
-              {formatDate(mainItem.post_date)}
-            </time>
-            <h3 className="text-lg md:text-xl font-semibold leading-tight">
-              {mainItem.post_title}
-            </h3>
+            <time className="block text-sm opacity-80 mb-1">{formatDate(mainItem.post_date)}</time>
+            <h3 className="text-lg md:text-xl font-semibold leading-tight">{mainItem.post_title}</h3>
           </div>
         </Link>
 
-        {/* 2 gambar samping */}
         <div className="flex flex-row md:flex-col flex-1 gap-1">
           {sideItems.map((item) => (
             <Link
               key={`slider-side-${item.ID}`}
               href={`/berita/${item.ID}`}
+              onMouseEnter={() => prefetchBerita(item.ID)}
               className="flex-1 relative overflow-hidden cursor-pointer select-none"
               aria-label={`Berita samping: ${item.post_title}`}
             >
-              <img
-                src={item.image}
-                alt={item.post_title}
-                className="w-full h-full object-cover transition-transform duration-700 ease-in-out hover:scale-105"
-                loading="lazy"
-                draggable={false}
-              />
+              <img src={item.image} alt={item.post_title} className="w-full h-full object-cover transition-transform duration-700 ease-in-out hover:scale-105" loading="lazy" draggable={false} />
               <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/50 to-transparent" />
               <div className="absolute bottom-2 left-2 right-2 text-white drop-shadow-sm text-xs md:text-sm leading-tight">
                 <time className="block opacity-80 mb-0.5">{formatDate(item.post_date)}</time>
@@ -119,7 +109,6 @@ export default function BeritaSlider({ items }) {
         </div>
       </div>
 
-      {/* Panah navigasi */}
       <button
         onClick={goPrev}
         aria-label="Sebelumnya"

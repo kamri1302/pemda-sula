@@ -4,10 +4,13 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import BeritaSidebar from '@/components/BeritaSidebar';
+import { usePrefetchCache } from '@/context/PrefetchCacheContext';
 
 export default function BeritaDetail() {
   const params = useParams();
   const id = params?.id;
+
+  const { getCache, setCache } = usePrefetchCache();
 
   const [berita, setBerita] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,15 +18,27 @@ export default function BeritaDetail() {
 
   useEffect(() => {
     if (!id) return;
+
+    // Cek cache dulu
+    const cached = getCache(id);
+    if (cached) {
+      setBerita(cached);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     fetch(`/api/berita/${id}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        setBerita(data);
+        if (data) {
+          setBerita(data);
+          setCache(id, data); // simpan ke cache
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [id]);
+  }, [id, getCache, setCache]);
 
   useEffect(() => {
     fetch('/api/berita')
@@ -51,12 +66,41 @@ export default function BeritaDetail() {
         <article className="bg-white border border-gray-200 overflow-hidden">
           <div className="px-[15px] md:px-[30px] pt-6">
             <h1 className="text-3xl font-bold uppercase mb-2">{berita.post_title}</h1>
-            <p className="text-sm text-gray-500">
-              {new Date(berita.post_date).toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-              })}
+            <p className="text-sm text-gray-500 flex items-center gap-4">
+              <span className="italic text-gray-600">by {berita.author_name}</span>
+              <span>
+                {new Date(berita.post_date).toLocaleDateString('id-ID', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })}
+              </span>
+
+              {/* View count dengan icon mata */}
+              <span className="flex items-center text-gray-400">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-1 text-gray-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
+                <span>{berita.post_views_count ?? 0}</span>
+              </span>
             </p>
           </div>
 
@@ -88,6 +132,16 @@ export default function BeritaDetail() {
                   href={`/berita/${item.ID}`}
                   className="block border border-gray-100 hover:border-gray-300 p-3 transition rounded"
                   aria-label={item.post_title}
+                  onMouseEnter={() => {
+                    if (!getCache(item.ID)) {
+                      fetch(`/api/berita/${item.ID}`)
+                        .then((res) => (res.ok ? res.json() : null))
+                        .then((data) => {
+                          if (data) setCache(item.ID, data);
+                        })
+                        .catch(() => {});
+                    }
+                  }}
                 >
                   {item.image && (
                     <img

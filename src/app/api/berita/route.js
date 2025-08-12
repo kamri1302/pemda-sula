@@ -180,26 +180,38 @@ const mediaTable = [
   { media_id: 210, file_path: "images/edukasi-lingkungan.webp", mime_type: "image/webp", post_title: "Edukasi Lingkungan Hidup" },
 ];
 
+// Dummy data tabel users (authors)
+const usersTable = [
+  { ID: 1, display_name: "Muhammad Kamri" },
+  { ID: 2, display_name: "Rina Sula" },
+  { ID: 3, display_name: "Ahmad Yusuf" },
+];
 
 export async function GET() {
-  // Join berita dengan meta dan media
-  const beritaWithImage = beritaTable.map((berita) => {
+  // Join berita dengan meta, media, dan users (author)
+  const beritaWithImageAndAuthor = beritaTable.map((berita) => {
+    // Cari thumbnail id dari meta
     const thumbMeta = beritaMeta.find(
       (meta) =>
         meta.berita_id === berita.ID && meta.meta_key === "_thumbnail_id"
     );
 
+    // Cari media dari thumbnail id
     const media =
       thumbMeta &&
       mediaTable.find((m) => m.media_id === parseInt(thumbMeta.meta_value));
 
+    // Cari nama author dari usersTable
+    const author = usersTable.find((user) => user.ID === berita.post_author);
+
     return {
       ...berita,
-      image: media ? `/${media.file_path}` : null, // URL gambar
+      image: media ? `/${media.file_path}` : null,
+      author_name: author ? author.display_name : "Unknown Author",
     };
   });
 
-  return Response.json(beritaWithImage);
+  return Response.json(beritaWithImageAndAuthor);
 }
 
-export { beritaTable, beritaMeta, mediaTable };
+export { beritaTable, beritaMeta, mediaTable, usersTable };
