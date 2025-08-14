@@ -19,13 +19,13 @@ export default function BeritaList() {
 
   const { getCache, setCache } = usePrefetchCache();
 
-  // Prefetch berita detail saat hover
-  const prefetchBerita = (id) => {
-    if (getCache(id)) return; // sudah ada di cache
-    fetch(`/api/berita/${id}`)
+  // Prefetch berita detail saat hover - menggunakan slug
+  const prefetchBerita = (slug) => {
+    if (getCache(slug)) return; // sudah ada di cache
+    fetch(`/api/berita/${slug}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (data) setCache(id, data);
+        if (data) setCache(slug, data);
       })
       .catch(() => {});
   };
@@ -109,9 +109,9 @@ export default function BeritaList() {
                 >
                   {/* Gambar kiri */}
                   <Link
-                    href={`/berita/${item.ID}`}
+                    href={`/berita/${item.post_name}`} // menggunakan slug
                     className="flex-shrink-0"
-                    onMouseEnter={() => prefetchBerita(item.ID)}
+                    onMouseEnter={() => prefetchBerita(item.post_name)}
                   >
                     {item.image && (
                       <img
@@ -168,8 +168,8 @@ export default function BeritaList() {
                       </p>
 
                       <Link
-                        href={`/berita/${item.ID}`}
-                        onMouseEnter={() => prefetchBerita(item.ID)}
+                        href={`/berita/${item.post_name}`} // menggunakan slug
+                        onMouseEnter={() => prefetchBerita(item.post_name)}
                       >
                         <h2 className="text-xl font-semibold mb-2 hover:text-gray-700 transition-colors">
                           {item.post_title}
@@ -180,9 +180,9 @@ export default function BeritaList() {
 
                     {/* Link hijau */}
                     <Link
-                      href={`/berita/${item.ID}`}
+                      href={`/berita/${item.post_name}`} // menggunakan slug
                       className="mt-2 text-green-700 hover:text-green-900 font-medium"
-                      onMouseEnter={() => prefetchBerita(item.ID)}
+                      onMouseEnter={() => prefetchBerita(item.post_name)}
                     >
                       Baca selengkapnya &rarr;
                     </Link>

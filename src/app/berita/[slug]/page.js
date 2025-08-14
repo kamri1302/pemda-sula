@@ -8,7 +8,7 @@ import { usePrefetchCache } from '@/context/PrefetchCacheContext';
 
 export default function BeritaDetail() {
   const params = useParams();
-  const id = params?.id;
+  const slug = params?.slug; // meskipun parameter masih bernama 'id', sekarang berisi slug
 
   const { getCache, setCache } = usePrefetchCache();
 
@@ -17,10 +17,10 @@ export default function BeritaDetail() {
   const [saranBerita, setSaranBerita] = useState([]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!slug) return;
 
-    // Cek cache dulu
-    const cached = getCache(id);
+    // Cek cache dulu - menggunakan slug sebagai key
+    const cached = getCache(slug);
     if (cached) {
       setBerita(cached);
       setLoading(false);
@@ -28,17 +28,17 @@ export default function BeritaDetail() {
     }
 
     setLoading(true);
-    fetch(`/api/berita/${id}`)
+    fetch(`/api/berita/${slug}`) // menggunakan slug
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (data) {
           setBerita(data);
-          setCache(id, data); // simpan ke cache
+          setCache(slug, data); // simpan ke cache dengan slug sebagai key
         }
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [id, getCache, setCache]);
+  }, [slug, getCache, setCache]);
 
   useEffect(() => {
     fetch('/api/berita')
@@ -48,12 +48,13 @@ export default function BeritaDetail() {
           setSaranBerita([]);
           return;
         }
-        const filtered = data.filter((b) => b.ID !== Number(id));
+        // Filter berdasarkan slug, bukan ID
+        const filtered = data.filter((b) => b.post_name !== slug);
         const shuffled = filtered.sort(() => 0.5 - Math.random());
         setSaranBerita(shuffled.slice(0, 3));
       })
       .catch(() => setSaranBerita([]));
-  }, [id]);
+  }, [slug]);
 
   if (loading) return <div className="p-6 text-center">Memuat berita...</div>;
   if (!berita) return <div className="p-6 text-center text-red-600">Berita tidak ditemukan.</div>;
@@ -129,15 +130,15 @@ export default function BeritaDetail() {
               {saranBerita.map((item) => (
                 <Link
                   key={item.ID}
-                  href={`/berita/${item.ID}`}
+                  href={`/berita/${item.post_name}`} // menggunakan slug
                   className="block border border-gray-100 hover:border-gray-300 p-3 transition rounded"
                   aria-label={item.post_title}
                   onMouseEnter={() => {
-                    if (!getCache(item.ID)) {
-                      fetch(`/api/berita/${item.ID}`)
+                    if (!getCache(item.post_name)) { // cek cache berdasarkan slug
+                      fetch(`/api/berita/${item.post_name}`) // fetch berdasarkan slug
                         .then((res) => (res.ok ? res.json() : null))
                         .then((data) => {
-                          if (data) setCache(item.ID, data);
+                          if (data) setCache(item.post_name, data); // simpan cache dengan slug
                         })
                         .catch(() => {});
                     }

@@ -49,7 +49,7 @@ export default function BeritaSection() {
                 transition={{ duration: 0.5 }}
                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition"
               >
-                <Link href={`/berita/${item.ID}`}>
+                <Link href={`/berita/${item.post_name}`}>
                   <Image
                     src={item.image}
                     alt={item.post_title}

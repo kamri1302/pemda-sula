@@ -1,10 +1,11 @@
 import { beritaTable, beritaMeta, mediaTable, usersTable } from "../route";
 
 export async function GET(req, context) {
-  const params = await context.params; // tambahkan await
-  const { id } = params;
+  const params = await context.params;
+  const { slug } = params; // menggunakan slug bukan id
 
-  const berita = beritaTable.find((b) => b.ID === parseInt(id));
+  // Cari berita berdasarkan post_name (slug)
+  const berita = beritaTable.find((b) => b.post_name === slug);
   if (!berita) {
     return new Response(
       JSON.stringify({ error: "Berita tidak ditemukan" }),
